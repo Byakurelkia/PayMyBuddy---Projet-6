@@ -57,6 +57,11 @@ public class User implements UserDetails {
         this.credentialsNonExpired = credentialsNonExpired;
     }
 
+    public User(String email, String lastName, String firstName) {
+        this.email = email;
+        this.lastName = lastName;
+        this.firstName = firstName;
+    }
 
 
     @Override

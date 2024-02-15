@@ -2,17 +2,14 @@ package com.paymybuddy.configuration;
 
 import com.paymybuddy.security.JwtAuthFilter;
 import com.paymybuddy.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,15 +17,16 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfiguration {
+
+    @Value("${jwt.key}")
+    private String KEY;
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsServices;
@@ -50,7 +48,7 @@ public class SecurityConfiguration {
                         x
                                 .requestMatchers("/registration/**","/login","/user/**","/","/css/**","/addNewUser","/auth/generateToken").permitAll()
                                 .anyRequest().authenticated())
-                .sessionManagement( x ->  x.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement( x ->  x.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authenticationProvider(authenticationProvider())
                 .formLogin(formLoginConfigurer -> {
                     formLoginConfigurer.loginPage("/login").permitAll();
@@ -62,8 +60,8 @@ public class SecurityConfiguration {
                     logoutConfigurer.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll();
                     logoutConfigurer.logoutSuccessUrl("/login?logout").permitAll();
                 })
-                .rememberMe(x-> x.key("KEY"))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .rememberMe(x-> x.key(KEY));
+                //.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
                 //.httpBasic(Customizer.withDefaults());
 
         return security.build();
@@ -81,6 +79,7 @@ public class SecurityConfiguration {
     public AuthenticationManager authManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
+
 }
 
 

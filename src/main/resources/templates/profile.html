@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>PayMyBuddy- Profile</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"></script>
+    <style>
+        .modal-header {
+        background: green;
+        color: white;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="card" align="center">
+    <div class="card-header bg-dark text-white ">
+        PayMy Buddy
+    </div>
+</div>
+
+<div class="d-flex flex-row justify-content-between">
+    <div class="card " style="padding-left: 100px; border: 1px solid #fff; ">
+        <div class="card-header bg-success text-white" style="border-radius: 10px;" align="center">
+            PayMy Buddy
+        </div>
+    </div>
+    <div class="row " style="padding-right: 100px;">
+        <ul class="nav justify-content-end">
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/home}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/transfer}">Transfer</a>
+
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/profile}">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/contact}">Contact</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/logout}">Log Off</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<br>
+
+<div class="container">
+    <div class="card" style="width:100%; padding:10px;">
+        <div class="row justify-content-md-center">
+            <div class="col-md-6 col-md-offset-3">
+
+                <br/><br/>
+                <!-- IBAN updated successfully message -->
+                <div th:if="${param.IBANupdatedsuccessfully}">
+                    <br/>
+                    <div class="alert alert-info" align="center"> IBAN Updated Successfully !</div>
+                    <br/>
+                </div>
+
+                <!-- bank account not found exception-->
+                <div th:if="${param.bankAccountNotFound}">
+                    <br/>
+                    <div class="alert alert-danger" align="center"> Bank Account Information Not Found! Please retry or contact admin </div>
+                    <br/>
+                </div>
+
+                <!-- error if mail is already used -->
+                <div th:if="${param.profileNotUpdated}">
+                    <br/>
+                    <div class="alert alert-danger" align="center"> Mail is already used, please choose an other mail !</div>
+                    <br/>
+                </div>
+
+                <!-- error if IBAN Is empty or composed only space  -->
+                <div th:if="${param.IBANNotUpdated}">
+                    <br/>
+                    <div class="alert alert-danger" align="center"> IBAN can not be empty or composed only spaces!</div>
+                    <br/>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-success text-white" align="center">
+                        My Profile
+                    </div>
+                </div>
+                <br/><br/>
+
+                <form th:action="@{/updateUserProfile}" method="post" th:object="${user}">
+                    <div th:object="${userToUpdate}">
+                        <div class="mb-3">
+                            <label class="control-label" for="firstName"> First Name : <a
+                                    th:text="${user.firstName}"></a></label>
+                            <br/>
+                            <label>Your New FirstName</label>
+                            <input id="firstName" class="form-control" th:field="${userToUpdate.firstName}" required="autofocus" placeholder="new firstname *"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="control-label" for="lastName"> Last Name : <a th:text="${user.lastName}"></a></label>
+                            <br/>
+                            <label>Your New LastName</label>
+                            <input id="lastName" class="form-control" th:field="${userToUpdate.lastName}" required="autofocus" placeholder="new lastname *"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="control-label" for="email"> Email : <a th:text="${user.email}"></a> </label>
+                            <br/>
+                            <label>Your New Email :</label>
+                            <input id="email" class="form-control" th:field="${userToUpdate.email}" required="autofocus" placeholder="new email *"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="control-label" for="password"> Password : </label>
+                            <br/>
+                            <label>Your New Password</label>
+                            <input id="password" class="form-control" type="password"
+                                   th:field="${userToUpdate.password}" required="autofocus" placeholder="new password *"/>
+                        </div>
+
+                        <br/>
+                        <div class="mb-3" style="display:flex; justify-content:center;">
+                            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
+                                    data-bs-target="#updateProfileModal">Update Profile
+                            </button>
+                            <br/>
+                        </div>
+                        <div class="modal fade" id="updateProfileModal" tabindex="-1"
+                             aria-labelledby="updateProfileModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="updateProfileModalLabel">Update Your
+                                            Profile</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <label>
+                                            You Need To Reconnect After Update, Do You Approve This Update?
+                                        </label>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-outline-success">Yes</button>
+                                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">No
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <br/><br/>
+                <div class="card">
+                    <div class="card-header bg-success text-white" style="" align="center">
+                        My Bank Account Information
+                    </div>
+                </div>
+                <br/>
+                <form th:action="@{/updateIBAN}" method="post" th:object="${userBankAccount}" }>
+                    <div class="mb-3">
+                        <label class="control-label" for="IBAN">IBAN : <a th:text="${userBankAccount.IBAN}"></a></label>
+                        <br/>
+                        <label>Your New IBAN : </label>
+                        <input id="IBAN" class="form-control" th:name="IBAN" required
+                               autofocus="autofocus" placeholder="new IBAN *"/>
+                    </div>
+                    <div class="mb-3" style="display:flex; justify-content:center;">
+                        <button type="submit" class="btn btn-outline-success">Update IBAN</button>
+                        <br/>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

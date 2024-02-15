@@ -20,51 +20,82 @@
 <br><br>
 
 <div class="container">
-    <div class="card" style="width:100%; padding:10px;" >
+    <div class="card" style="width:100%; padding:10px;">
         <div class="row justify-content-md-center">
-         <div class="col-md-6 col-md-offset-3">
+            <div class="col-md-6 col-md-offset-3">
 
-             <br/><br/>
-             <div class="card">
-                 <div class="card-header bg-success text-white" style="" align="center">
-                     Registration to PayMy Buddy
-                 </div>
-             </div>
-             <br/><br/>
-            <form th:action="@{/registration}" method="post" th:object="${user}">
-
-                <div class="mb-3">
-                    <label class="control-label" for="firstName"> First Name</label>
-                    <input id="firstName" class="form-control" th:field="*{firstName}" required autofocus="autofocus"/>
-                </div>
-
-                <div class="mb-3">
-                    <label class="control-label" for="lastName"> Last Name</label>
-                    <input id="lastName" class="form-control" th:field="*{lastName}" required autofocus="autofocus"/>
-                </div>
-
-                <div class="mb-3">
-                    <label class="control-label" for="eMail"> Email</label>
-                    <input id="eMail" class="form-control" th:field="*{eMail}" required autofocus="autofocus"/>
-                </div>
-
-                <div class="mb-3">
-                    <label class="control-label" for="password"> Password</label>
-                    <input id="password" class="form-control" type="password" th:field="*{password}" required
-                           autofocus="autofocus"/>
-                </div>
-
-                <br/>
-                <div class="mb-3" style="display:flex; justify-content:center;">
-                    <button type="submit" class="btn btn-primary"> Register</button>
+                <!-- error if mail is already used -->
+                <div th:if="${param.failed}">
                     <br/>
-                </div>
-                <div style="display:flex; justify-content:center;">
-                    <span> Already registered? <a href="/" th:href="@{/login}"> Login here</a> </span>
+                    <div class="alert alert-danger" align="center"> Mail is already used, please choose an other mail !</div>
                 </div>
 
-            </form>
-        </div>
+                <!-- error if fields is empty or composed only space-->
+                <div th:if="${param.errorFields}">
+                    <br/>
+                    <div class="alert alert-danger" align="center"> Field/s can not be empty OR composed only space !</div>
+                </div>
+
+                <div th:if="${param.someErrors}">
+                    <br/>
+                    <div class="alert alert-danger" align="center"> Some errors occured, retry in a few moment or contact administrator..</div>
+                </div>
+
+                <!-- some errors-->
+                <br/><br/>
+                <div class="card">
+                    <div class="card-header bg-success text-white" style="" align="center">
+                        Registration to PayMy Buddy
+                    </div>
+                </div>
+                <br/><br/>
+                <form th:action="@{/registration}" method="post" th:object="${user}">
+
+                    <div class="mb-3">
+                        <label class="control-label" for="firstName"> First Name</label>
+                        <input id="firstName" class="form-control" th:field="*{firstName}" required
+                               autofocus="autofocus"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="control-label" for="lastName"> Last Name</label>
+                        <input id="lastName" class="form-control" th:field="*{lastName}" required
+                               autofocus="autofocus"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="control-label" for="eMail"> Email</label>
+                        <input id="eMail" class="form-control" th:field="*{eMail}" required autofocus="autofocus"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="control-label" for="IBAN">IBAN</label>
+                        <input id="IBAN" class="form-control" th:field="*{IBAN}" required
+                               autofocus="autofocus"/>
+                    </div>
+                    <div
+                            class="text-danger"
+                            th:if="${#fields.hasErrors('IBAN')}"
+                            th:errors="*{IBAN}"
+                    ></div>
+
+                    <div class="mb-3">
+                        <label class="control-label" for="password"> Password</label>
+                        <input id="password" class="form-control" type="password" th:field="*{password}" required
+                               autofocus="autofocus"/>
+                    </div>
+
+                    <br/>
+                    <div class="mb-3" style="display:flex; justify-content:center;">
+                        <button type="submit" class="btn btn-outline-success"> Register</button>
+                        <br/>
+                    </div>
+                    <div style="display:flex; justify-content:center;">
+                        <span> Already registered? <a style="color:rgb(0, 175, 0)" href="/" th:href="@{/login}"> Login here</a> </span>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </div>
 </div>

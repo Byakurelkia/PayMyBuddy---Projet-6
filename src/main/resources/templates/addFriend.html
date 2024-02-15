@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+>
 <head>
     <meta charset="UTF-8">
     <title>PayMyBuddy- Add Friend</title>
@@ -18,56 +18,71 @@
     </div>
 </div>
 
-<div class="d-flex flex-row" >
-    <div class="card " align="left" style=" padding-left: 100px; border: 1px solid #fff; ">
+<div class="d-flex flex-row justify-content-between">
+    <div class="card " style="padding-left: 100px; border: 1px solid #fff; ">
         <div class="card-header bg-success text-white" style="border-radius: 10px;" align="center">
             PayMy Buddy
         </div>
     </div>
+    <div class="row " style="padding-right: 100px;">
+        <ul class="nav justify-content-end">
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/home}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/transfer}">Transfer</a>
 
-    <ul class="nav justify-content-end" style="padding-left: 100px; margin: auto;">
-        <li class="nav-item">
-            <a class="nav-link active" th:href="@{/home}">Home</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/transfer}">Transfer</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/profile}">Profile</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link " th:href="@{/contact}">Contact</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link " th:href="@{/logout}">Log Off</a>
-        </li>
-    </ul>
-</div>
-
-<div class="card" style="margin:25px;">
-
-    <div class="header" align="center" >
-        <h1>Add Friend</h1>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/profile}">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/contact}">Contact</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/logout}">Log Off</a>
+            </li>
+        </ul>
     </div>
-    <div class="row justify-content-md-center">
-        <div class="col-md-6 col-md-offset-3">
-    <form action="#" th:action="@{/addFriend}" th:object="${emailFriend}" method="POST" style="margin:25px;">
-
-
-        <div style="mb-3">
-        <input type="text" th:field="*{emailFriend}" placeholder="EMAIL FRIEND " class="form-control mb-4 col-4">
-        </div>
-
-        <div style="display:flex; justify-content:center;">
-            <button type="submit" class="btn btn-info col-2">Save FRIEND</button>
-        </div>
-
-    </form>
-        </div>
 </div>
 
+<div class="container" style=" height: 200px; width: 100%; padding: 50px;">
+
+    <div th:if="${param.addFriendUnsuccessful}">
+        <div class="alert alert-danger" align="center"> Friend not added, user doesnt exist with this mail on our application !</div>
+    </div>
+
+    <div class="card">
+        <div class="header" align="center" style=" padding: 10px; ">
+            <h1>Add Friend</h1>
+        </div>
+        <div class="row justify-content-md-center">
+            <div class="row-md-6 col-md-offset-3">
+                <form action="#" th:action="@{/addFriend}" method="POST"
+                      style="margin:50px;">
+
+                    <div th:if="${param.sameUser}">
+                        <div class="alert alert-danger">You can not add yourself as friend!</div>
+                    </div>
+
+
+                    <div style="mb-3">
+                        <input type="text" th:name="emailFriend" placeholder="Type Here Email Friend "
+                               class="form-control mb-4 col-4">
+                    </div>
+                    <div style="display:flex; justify-content:center;">
+                        <button type="submit" class="btn btn-outline-success">Save FRIEND</button>
+                    </div>
+
+                </form>
+
+
+            </div>
+        </div>
+    </div>
 
 
 </div>
+
 </body>
 </html>

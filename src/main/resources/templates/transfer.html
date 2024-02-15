@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>PayMyBuddy- Transfer</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div class="card" align="center">
+    <div class="card-header bg-dark text-white ">
+        PayMy Buddy
+    </div>
+</div>
+
+<div class="d-flex flex-row justify-content-between">
+    <div class="card " style="padding-left: 100px; border: 1px solid #fff; ">
+        <div class="card-header bg-success text-white" style="border-radius: 10px;" align="center">
+            PayMy Buddy
+        </div>
+    </div>
+    <div class="row " style="padding-right: 100px;">
+        <ul class="nav justify-content-end">
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/home}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/transfer}">Transfer</a>
+
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/profile}">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/contact}">Contact</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/logout}">Log Off</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<br/>
+<div class="container">
+    <div class="card" style="width:100%; padding:10px;">
+        <div class="row justify-content-md-center">
+            <div class="col-md-6 col-md-offset-3">
+                <br/>
+                <div class="card">
+                    <div class="card-header bg-success text-white" align="center">
+                        Transfer
+                    </div>
+                </div>
+                <br/>
+                <!--<div class="card " style="float:right; margin:11px; border: 1px solid #fff; ">
+                    <div style="border-radius: 10px;" align="center">
+                        <a class="btn btn-outline-success" href="/" th:href="@{/showFormAddFriend}">Add a friend</a>
+                    </div>
+                </div>-->
+            </div>
+        </div>
+
+        <div th:if="${param.transferUnsuccessful}">
+            <br/>
+            <div class="alert alert-danger" align="center"> Transfer not made, please contact us.</div>
+        </div>
+
+        <div th:if="${param.transferUnsuccessfulAmount}">
+            <br/>
+            <div class="alert alert-danger" align="center"> Transfer not made, please check your sold!</div>
+        </div>
+
+        <div th:if="${param.transferSuccess}">
+            <br/>
+            <div class="alert alert-info" align="center"> Transfer made successfully !</div>
+        </div>
+
+
+        <div class="row justify-content-md-center">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="row col-md-10">
+                    <h4>Send Money</h4>
+                </div>
+
+                <form th:action="@{/makePayment}" method="post" th:object="${transferInformation}">
+                    <div class="card">
+                        <br/>
+                        <div>
+                            <div class="card-body">
+                                <label>Choose friend :</label>
+
+                                <div class="input-group mb-3" th:if="${friendsListSize} == 0">
+                                    <input type="text" class="form-control"
+                                           placeholder="You don't have friend actually..." disabled>
+                                    <a class="btn btn-outline-success" href="/" th:href="@{/showFormAddFriend}">Add a
+                                        friend</a>
+                                </div>
+
+                                <select class="form-select" id="receiverUser" required="autofocus"
+                                        th:object="${friendsList}" th:field="${transferInformation.friendMail}">
+                                    <option value="" selected>Friend...</option>
+                                    <option th:each="friend : ${friendsList}"
+                                            th:value="${friend.email}" th:text="${friend.firstName}"></option>
+                                </select>
+
+                            </div>
+
+                            <div class="card-body">
+                                <label>Enter description :</label>
+                                <input id="description" class="form-control"
+                                       th:field="${transferInformation.description}"
+                                       required="autofocus" placeholder="Transfer description *"/>
+                            </div>
+
+                            <div class="card-body">
+                                <label>Select amount :</label>
+                                <input class="form-control" th:field="${transferInformation.amount}"
+                                       min="0,01" pattern="^\d*(\.\d{0,2})?$"
+                                       id="amount"
+                                       placeholder="Amount to transfer *"
+                                       required="autofocus"/>
+                            </div>
+
+                        </div>
+                        <div class="mb-3" style="display:flex; justify-content:center;">
+                            <button type="submit" class="btn btn-outline-success" style="width:50%; margin:10px;">Pay
+                            </button>
+                            <br/>
+                        </div>
+                    </div>
+                </form>
+                <br/>
+
+                <!-- transactions list part -->
+                <div class="row col-md-10">
+                    <h4>My Transactions</h4>
+                </div>
+
+                <table class="table table-bordered table-hover">
+                    <thead class="table-success">
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    </tr>
+                    </thead>
+
+                    <tr th:if="${transactionsListSize} == 0">
+                        <td colspan="3">You don't have transaction actually !</td>
+                    </tr>
+
+                    <tr th:if="${transactionsListSize} != 0" th:each="transaction : ${transactionsList}">
+                        <td th:text="${transaction.receiverUserName}"></td>
+                        <td th:text="${transaction.description}"></td>
+                        <td th:text="${transaction.amount}"></td>
+                    </tr>
+
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

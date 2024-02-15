@@ -46,10 +46,14 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 		User user3 = userRepository.save(new User("deneme3","last3","first3",encoder.encode("1234"),true,true,true,true));
 		User user4 = userRepository.save(new User("deneme4","last4","first4",encoder.encode("1234"),true,true,true,true));
 
-		/*user.getAccount().setUser(user);
-		user2.getAccount().setUser(user2);
-		user3.getAccount().setUser(user3);
-		user4.getAccount().setUser(user4);*/
+		Account accountUser1 = new Account(0, user);
+		accountRepository.save(accountUser1);
+		Account accountUser2 = new Account(0, user2);
+		accountRepository.save(accountUser2);
+//		Account accountUser3 = new Account(0, user3);
+//		accountRepository.save(accountUser3);
+		Account accountUser4 = new Account(0, user4);
+		accountRepository.save(accountUser4);
 
 		user.addFriends(friendRepository.save(new Friends(new IdFriend(user, user2))));
 		user.addFriends(new Friends(new IdFriend(user,user4)));
@@ -61,11 +65,11 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 		userRepository.save(user3);
 		userRepository.save(user4);
 
-		/*Transaction transaction = transactionRepository.save(
+		Transaction transaction = transactionRepository.save(
 				new Transaction(LocalDateTime.now(), 5000, "deneme transaction",
-						accountRepository.findByUserId(user.getId()).get(), accountRepository.findByUserId(user2.getId()).get()));*/
+						accountRepository.findByUserId(1L).get(), accountRepository.findByUserId(1L).get(),TransactionType.TO_BANK));
 
-		//transactionRepository.save(transaction);
+		transactionRepository.save(transaction);
 
 		System.out.println(friendRepository.findByFriendsInitialUserId(1L).toString());
 		System.out.println(friendRepository.findByFriendsInitialUserId(2L).toString());

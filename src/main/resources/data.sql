@@ -1,4 +1,3 @@
-
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
@@ -6,7 +5,6 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema paymybuddy-db
 -- -----------------------------------------------------
-
 CREATE SCHEMA IF NOT EXISTS `paymybuddy-db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
 USE `paymybuddy-db` ;
 
@@ -19,14 +17,14 @@ CREATE TABLE IF NOT EXISTS `paymybuddy-db`.`user` (
   `credentials_non_expired` BIT(1) NOT NULL,
   `is_enabled` BIT(1) NOT NULL,
   `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `e_mail` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
   `first_name` VARCHAR(255) NOT NULL,
   `last_name` VARCHAR(255) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `UK_5awx5dcb9xdv5m1bl38bmoke0` (`e_mail` ASC) VISIBLE)
+  UNIQUE INDEX `UK_ob8kqyqqgmefl0aco34akdtpe` (`email` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 7
+AUTO_INCREMENT = 5
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -53,6 +51,23 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `paymybuddy-db`.`account_id_sequence` (
   `next_val` BIGINT NULL DEFAULT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `paymybuddy-db`.`bank_account`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `paymybuddy-db`.`bank_account` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT NULL DEFAULT NULL,
+  `iban` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `UK_ss4uej5gx2a07srb540l15s21` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `FK92iik4jwhk7q385jubl2bc2mm`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `paymybuddy-db`.`user` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -87,6 +102,7 @@ CREATE TABLE IF NOT EXISTS `paymybuddy-db`.`transaction` (
   `receiver_user_account` BIGINT NULL DEFAULT NULL,
   `sender_user_account` BIGINT NULL DEFAULT NULL,
   `description` VARCHAR(255) NULL DEFAULT NULL,
+  `transaction_type` ENUM('FROM_BANK', 'TO_BANK', 'TO_FRIEND') NULL DEFAULT NULL,
   PRIMARY KEY (`id_transaction`),
   INDEX `FKgcolwsqhbd81mwk61w2vuilm1` (`receiver_user_account` ASC) VISIBLE,
   INDEX `FKbxnvo1ujlg87ovjiamir3ajmf` (`sender_user_account` ASC) VISIBLE,

@@ -14,6 +14,7 @@ public class CreateUserRequest {
     String lastName;
     String eMail;
     String password;
+    String IBAN;
 
     public CreateUserRequest(){}
 
@@ -47,5 +48,13 @@ public class CreateUserRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getIBAN() {
+        return IBAN;
+    }
+
+    public void setIBAN(String IBAN) {
+        this.IBAN = IBAN;
     }
 }

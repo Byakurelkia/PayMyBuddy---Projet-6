@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Setter
@@ -28,16 +27,28 @@ public class Transaction {
     @JoinColumn(name = "sender_user_account")
     private Account senderUserAccount;
 
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
+
 
     public Transaction() {
     }
 
-    public Transaction(LocalDateTime dateTransaction, double amount, String description, Account receiverAccount, Account senderUserAccount) {
+    public Transaction(LocalDateTime dateTransaction, double amount, String description, Account receiverAccount, Account senderUserAccount, TransactionType transactionType) {
         this.dateTransaction = dateTransaction;
         this.amount = amount;
         this.description = description;
         this.receiverAccount= receiverAccount;
         this.senderUserAccount = senderUserAccount;
+        this.transactionType = transactionType;
+    }
+
+    public Transaction(Long idTransaction, LocalDateTime dateTransaction, double amount, String description, Account receiverAccount) {
+        this.idTransaction = idTransaction;
+        this.dateTransaction = dateTransaction;
+        this.amount = amount;
+        this.description = description;
+        this.receiverAccount = receiverAccount;
     }
 
     @Override

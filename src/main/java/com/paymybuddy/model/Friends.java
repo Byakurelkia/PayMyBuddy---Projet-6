@@ -28,6 +28,8 @@ public class Friends {
     }
 
 */
+
+
     @Override
     public String toString() {
         return "Friends: " + "Firstname: " + friends.getFriend().getFirstName() + " , Lastname: " + friends.getFriend().getLastName();

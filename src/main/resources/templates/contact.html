@@ -17,57 +17,75 @@
     </div>
 </div>
 
-<div class="d-flex flex-row" >
-    <div class="card" align="left" style="width:30%;">
-        <div class="card-header bg-success text-white" align="center">
+<div class="d-flex flex-row justify-content-between">
+    <div class="card " style="padding-left: 100px; border: 1px solid #fff; ">
+        <div class="card-header bg-success text-white" style="border-radius: 10px;" align="center">
             PayMy Buddy
         </div>
     </div>
+    <div class="row " style="padding-right: 100px;">
+        <ul class="nav justify-content-end">
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/home}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/transfer}">Transfer</a>
 
-    <ul class="nav justify-content-end" style="padding-left: 100px; margin: auto;">
-        <li class="nav-item">
-            <a class="nav-link active" th:href="@{/home}">Home</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/transfer}">Transfer</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/profile}">Profile</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link " th:href="@{/contact}">Contact</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link " th:href="@{/logout}">Log Off</a>
-        </li>
-    </ul>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/profile}">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/contact}">Contact</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-success" th:href="@{/logout}">Log Off</a>
+            </li>
+        </ul>
+    </div>
 </div>
 
-<div class="container">
+<div class="container" style=" height: 200px; width: 100%; padding: 50px;">
     <div class="container-header">
-            <div class="row col-md-10" style="padding-top:25px;">
-                <h2>List of Friends</h2>
-            </div>
-            <div style="float:right; margin:11px;">
-                <button><a href="/" th:href="@{/showFormAddFriend}">Add Friend</a></button>
+        <div class="row col-md-10" style="padding-top:25px;">
+            <h2>List of Friends</h2>
+        </div>
+
+        <div th:if="${param.deletedSuccessfully}">
+            <div class="alert alert-info"> Friend deleted successfully !</div>
+        </div>
+
+        <div th:if="${param.friendAddedSuccessfully}">
+            <div class="alert alert-info"> Friend added successfully !</div>
+        </div>
+
+
+        <div class="card " style="float:right; margin:11px; border: 1px solid #fff; ">
+            <div style="border-radius: 10px;" align="center">
+                <a class="btn btn-outline-success" href="/" th:href="@{/showFormAddFriend}">Add a friend</a>
             </div>
         </div>
+     </div>
+
 
     <table class="table table-bordered table-hover">
         <thead class="table-success">
         <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
+            <th style="width: 85%;">Friend Mail</th>
+            <th>Action</th>
         </tr>
         </thead>
-        <tbody>
-        <tr th:each = "friend : ${friends}">
-            <td th:text = "${friend.firstName}"></td>
-            <td th:text = "${friend.lastName}"></td>
-            <td th:text = "${friend.email}"></td>
+
+        <tr th:if="${friendsListSize} == 0">
+            <td>You dont have friend actually !</td>
+            <td><a class="btn btn-outline-success" href="/" th:href="@{/showFormAddFriend}">Add a friend</a>
+            </td>
         </tr>
-        </tbody>
+        <tr th:if="${friendsListSize} > 0"  th:each="friend : ${friends}">
+            <td th:text="${friend.email}"></td>
+            <td><a class="btn btn-outline-danger" href="/" th:href="@{/deleteFriend/__${friend.email}__}">Delete</a></td>
+        </tr>
+
     </table>
 </div>
 
