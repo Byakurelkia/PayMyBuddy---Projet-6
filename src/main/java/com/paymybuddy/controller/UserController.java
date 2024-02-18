@@ -24,14 +24,10 @@ import org.springframework.web.bind.annotation.*;
  public class UserController {
 
     private final UserService userService;
-    private final BCryptPasswordEncoder encoder;
-    private final UserRepository userRepository;
     private final BankAccountService bankAccountService;
 
-    public UserController(UserService userService, BCryptPasswordEncoder encoder, UserRepository userRepository, BankAccountService bankAccountService) {
+    public UserController(UserService userService, BankAccountService bankAccountService) {
         this.userService = userService;
-        this.encoder = encoder;
-        this.userRepository = userRepository;
         this.bankAccountService = bankAccountService;
     }
 
@@ -81,8 +77,8 @@ import org.springframework.web.bind.annotation.*;
     @PostMapping("/updateUserProfile")
     public String updateUserProfile(@ModelAttribute("userToUpdate") User userToUpdate) {
         log.info("update user profile started");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User userConnected = (User) auth.getPrincipal();
+        String auth = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userConnected = userService.getUserByEmail(auth);
         try {
             userService.updateUser(userConnected.getEmail(), userToUpdate);
             log.info("update user profile successfully made");
@@ -97,8 +93,8 @@ import org.springframework.web.bind.annotation.*;
     @GetMapping("/profile")
     public String profile(Model model) throws Exception {
         log.info("profile method started");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User userConnected = (User) auth.getPrincipal();
+        String auth = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userConnected = userService.getUserByEmail(auth);
         try{
             BankAccount account = bankAccountService.findBankAccountByUserEmail(userConnected.getEmail());
             model.addAttribute("userBankAccount", account);

@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -76,11 +77,23 @@ public class Account {
 
     @Override
     public String toString() {
-        return "Account{" +
+        return "Account: " +
                 "idAccount=" + idAccount +
                 ", balance=" + balance +
                 ", receivedTransactions=" + receivedTransactions +
-                ", sentTransactions=" + sentTransactions +
-                '}';
+                ", sentTransactions=" + sentTransactions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Account)) return false;
+        Account account = (Account) o;
+        return Double.compare(account.balance, balance) == 0 && Objects.equals(idAccount, account.idAccount) && user.equals(account.user) && Objects.equals(receivedTransactions, account.receivedTransactions) && Objects.equals(sentTransactions, account.sentTransactions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idAccount, balance, user, receivedTransactions, sentTransactions);
     }
 }

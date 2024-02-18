@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Setter
@@ -61,5 +62,18 @@ public class Transaction {
                 ", receiverAccount=" + receiverAccount.toString() +
                 ", senderUserAccount=" + senderUserAccount.toString() +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Transaction)) return false;
+        Transaction that = (Transaction) o;
+        return Double.compare(that.amount, amount) == 0 && Objects.equals(idTransaction, that.idTransaction) && Objects.equals(description, that.description) && Objects.equals(receiverAccount, that.receiverAccount) && Objects.equals(senderUserAccount, that.senderUserAccount) && transactionType == that.transactionType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idTransaction, amount, description, receiverAccount, senderUserAccount, transactionType);
     }
 }

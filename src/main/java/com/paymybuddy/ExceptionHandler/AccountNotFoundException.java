@@ -11,8 +11,9 @@ public class AccountNotFoundException extends RuntimeException{
         super("Account Can Not Find With This User Id..");
     }
 
-
     public AccountNotFoundException(String errorMsg){
         super(errorMsg);
     }
+
+
 }

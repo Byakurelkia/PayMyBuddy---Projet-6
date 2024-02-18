@@ -2,10 +2,9 @@ package com.paymybuddy.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.Objects;
 
 @NoArgsConstructor
 @Getter
@@ -40,5 +39,16 @@ public class Friends {
         return "Initial User: " + "Firstname: " + friends.getInitialUser().getFirstName() + " , Lastname: " + friends.getInitialUser().getLastName();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Friends)) return false;
+        Friends friends1 = (Friends) o;
+        return Objects.equals(friends, friends1.friends);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(friends);
+    }
 }

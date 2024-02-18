@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @Slf4j
 @Service
 @Transactional
@@ -34,10 +37,10 @@ public class AccountService {
     }
 
     //OK
-    public String creditAccount(User receiverUser, Double amount){
+    public String creditAccount(User receiverUser, double amount){
         log.info("Credit Account started..");
         Account receiverAccount = findAccountByUserId(receiverUser.getId());
-        Double newBalanceReceiver = receiverAccount.getBalance() + amount;
+        double newBalanceReceiver = receiverAccount.getBalance() + amount;
         receiverAccount.setBalance(newBalanceReceiver);
         accountRepository.save(receiverAccount);
         log.info("Credit Account Successfully made..");
@@ -45,16 +48,16 @@ public class AccountService {
     }
 
     //OK
-    public String  debitAccount(User senderUser, Double amount){
+    public String  debitAccount(User senderUser, double amount){
         log.info("Debit Account started..");
         Account senderAccount = findAccountByUserId(senderUser.getId());
         if (!balanceIsSuffisant(senderAccount.getBalance(), amount)){
             log.error("Balance is not suffisant.");
             throw new BalanceIsNotSuffisant("Balance is not suffisant to do this transaction !");
         }
-
-        double newBalance =  senderAccount.getBalance() - amount;
-        senderAccount.setBalance(newBalance);
+        BigDecimal newBalance = new BigDecimal(senderAccount.getBalance() - amount).setScale(2, RoundingMode.HALF_UP);
+        //double newBalance =  senderAccount.getBalance() - amount;
+        senderAccount.setBalance(newBalance.doubleValue());
         accountRepository.save(senderAccount);
         log.info("Amount debited successfully ");
        return "Amount debited successfully ";
@@ -86,16 +89,10 @@ public class AccountService {
         return findAccountByUserId(userId).getBalance();
     }
 
-    //OK - BUT NOT USED !
-    public void deleteAccount(Long userId){
-        Long accountId = findAccountByUserId(userId).getIdAccount();
-        accountRepository.deleteById(accountId);
-    }
-
     //OK
-    private boolean balanceIsSuffisant(Double balance, Double amount){
+    public boolean balanceIsSuffisant(Double balance, Double amount){
         log.info("Balance ie suffisant ? started");
-        if (balance>amount)
+        if (balance>=amount)
             return true;
         else
             return false;

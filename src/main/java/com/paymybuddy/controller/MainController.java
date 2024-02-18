@@ -1,15 +1,19 @@
 package com.paymybuddy.controller;
 
+import com.paymybuddy.model.Account;
 import com.paymybuddy.model.User;
 import com.paymybuddy.service.AccountService;
 import com.paymybuddy.service.FriendService;
+import com.paymybuddy.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Slf4j
 @Controller
@@ -17,10 +21,12 @@ public class MainController {
 
     private final AccountService accountService;
     private final FriendService friendService;
+    private final UserService userService;
 
-    public MainController(AccountService accountService, FriendService friendService) {
+    public MainController(AccountService accountService, FriendService friendService, UserService userService) {
         this.accountService = accountService;
         this.friendService = friendService;
+        this.userService = userService;
     }
 
     @GetMapping("/login")
@@ -39,10 +45,13 @@ public class MainController {
     @GetMapping("/home")
     public String home(Model model) {
         log.info("home method started");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User userConnected = (User) auth.getPrincipal();
+        String auth = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userConnected = userService.getUserByEmail(auth);
         model.addAttribute("friendsNumber", friendService.getFriendsListIdByUserId(userConnected.getId()).size());
-        model.addAttribute("account", accountService.findAccountByUserId(userConnected.getId()));
+        Account account = accountService.findAccountByUserId(userConnected.getId());
+        BigDecimal bd = new BigDecimal(account.getBalance()).setScale(2, RoundingMode.HALF_UP);
+        account.setBalance(bd.doubleValue());
+        model.addAttribute("account", account);
         return "home";
     }
 

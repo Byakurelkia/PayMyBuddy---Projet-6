@@ -1,14 +1,10 @@
 package com.paymybuddy.controller;
 
-import com.paymybuddy.controller.dto.TransactionDTO;
-import com.paymybuddy.controller.dto.TransferDTO;
+import com.paymybuddy.dto.TransactionDTO;
+import com.paymybuddy.dto.TransferDTO;
 import com.paymybuddy.model.User;
-import com.paymybuddy.service.AccountService;
-import com.paymybuddy.service.BankAccountService;
-import com.paymybuddy.service.FriendService;
-import com.paymybuddy.service.TransactionService;
+import com.paymybuddy.service.*;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -27,12 +23,14 @@ public class AccountController {
     private final BankAccountService bankAccountService;
     private final TransactionService transactionService;
     private final FriendService friendService;
+    private final UserService userService;
 
-    public AccountController(AccountService accountService, BankAccountService bankAccountService, TransactionService transactionService, FriendService friendService) {
+    public AccountController(AccountService accountService, BankAccountService bankAccountService, TransactionService transactionService, FriendService friendService, UserService userService) {
         this.accountService = accountService;
         this.bankAccountService = bankAccountService;
         this.transactionService = transactionService;
         this.friendService = friendService;
+        this.userService = userService;
     }
 
     @ModelAttribute("transferInformation")
@@ -44,8 +42,8 @@ public class AccountController {
     @GetMapping("/transfer")
     public String transfer(Model model) {
         log.info("transfer method started");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
+        String auth = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.getUserByEmail(auth);
         List<User> friendsList = friendService.getFriendsListAsUserByUserId(user.getId());
         List<TransactionDTO> transactionsList = transactionService.transactionListByUserId(user.getId());
 
@@ -62,8 +60,13 @@ public class AccountController {
     public String makePayment(@ModelAttribute("transferInformation") TransferDTO transferDTO){
         log.info("make payment method started");
         System.out.println("amount " + transferDTO.getAmount());
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
+        String auth = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.getUserByEmail(auth);
+        if (transferDTO.getAmount() < 1){
+            log.error("make payment method failed,amount is less than 1");
+            return "redirect:/transfer?amountIncorrect";
+        }
+
         if (accountService.getBalanceByUserId(user.getId()) < transferDTO.getAmount() || accountService.getBalanceByUserId(user.getId()) == 0){
             log.error("make payment method failed,balance is not suffisant");
             return "redirect:/transfer?transferUnsuccessfulAmount";
@@ -84,8 +87,8 @@ public class AccountController {
     @GetMapping("/transferToBankAccount")
     public String transferToBankAccount(){
         log.info("transfer to bank account started");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
+        String auth = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.getUserByEmail(auth);
         try {
             transactionService.transactionToBankAccount(user);
             log.info("transfer to bank account successfully made");
@@ -100,12 +103,12 @@ public class AccountController {
     @PostMapping("/feedAccount")
     public String feedAccount(@ModelAttribute("amount") double amount) throws Exception {
         log.info("feed account from bank account started");
-        if (amount<=0){
-            log.error("feed account from bank account failed, amount is 0 or negative");
+        if (amount<1){
+            log.error("feed account from bank account failed, amount is less than 0");
             return "redirect:/home?feedAccountUnsuccessful";
         }
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
+        String auth = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.getUserByEmail(auth);
         transactionService.transactionFromBankAccountToAppAccount(user, amount);
         log.info("feed account from bank account successfully made");
         return "redirect:/home?feedAccountSuccess";
@@ -115,8 +118,8 @@ public class AccountController {
     @PostMapping("/updateIBAN")
     public String updateIBAN(@ModelAttribute("IBAN") String IBAN) throws Exception {
         log.info("update IBAN method started");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User userConnected = (User) auth.getPrincipal();
+        String auth = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userConnected = userService.getUserByEmail(auth);
         try{
             bankAccountService.updateBankAccount(userConnected.getEmail(),IBAN);
             log.info("update IBAN method successfully made");

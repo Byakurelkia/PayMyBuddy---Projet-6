@@ -1,4 +1,6 @@
-package com.paymybuddy.controller.dto;
+package com.paymybuddy.dto;
+
+import java.util.Objects;
 
 public class TransactionDTO {
 
@@ -37,5 +39,27 @@ public class TransactionDTO {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TransactionDTO)) return false;
+        TransactionDTO that = (TransactionDTO) o;
+        return Double.compare(that.amount, amount) == 0 && Objects.equals(receiverUserName, that.receiverUserName) && Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(receiverUserName, description, amount);
+    }
+
+    @Override
+    public String toString() {
+        return "TransactionDTO{" +
+                "receiverUserName='" + receiverUserName + '\'' +
+                ", description='" + description + '\'' +
+                ", amount=" + amount +
+                '}';
     }
 }

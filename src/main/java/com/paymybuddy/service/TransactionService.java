@@ -1,6 +1,6 @@
 package com.paymybuddy.service;
 
-import com.paymybuddy.controller.dto.TransactionDTO;
+import com.paymybuddy.dto.TransactionDTO;
 import com.paymybuddy.model.Account;
 import com.paymybuddy.model.Transaction;
 import com.paymybuddy.model.TransactionType;
@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,9 +37,9 @@ public class TransactionService {
     public Transaction transactionToBankAccount(User senderUser) throws Exception {
         log.info("Transaction to bank account started");
         Account senderUserAccount = accountService.findAccountByUserId(senderUser.getId());
-        Double amount = senderUserAccount.getBalance();
+        double amount = senderUserAccount.getBalance();
         if (amount == 0){
-            log.error("transaction to ban account failed, amount can not be null");
+            log.error("transaction to bank account failed, amount can not be null");
             throw new Exception("Sold is 0, transfer can not be processed");
         }
 
@@ -54,10 +56,11 @@ public class TransactionService {
     public Transaction transactionFromBankAccountToAppAccount(User user, double amount) {
         log.info("transaction from bank account to app account started");
         Account userAccount = accountService.findAccountByUserId(user.getId());
-        accountService.addAmountFromBankToAccount(user, amount);
+        double amountWithCharge = amount - chargeForAnyTransaction(amount);
+        accountService.addAmountFromBankToAccount(user, amountWithCharge);
         String description = "Transfer from bank account to application account";
 
-        Transaction transaction = new Transaction(LocalDateTime.now(), amount, description, userAccount, userAccount, TransactionType.FROM_BANK);
+        Transaction transaction = new Transaction(LocalDateTime.now(), amountWithCharge, description, userAccount, userAccount, TransactionType.FROM_BANK);
 
         return transactionRepository.save(transaction);
     }
@@ -83,11 +86,14 @@ public class TransactionService {
         Account senderAccount = accountService.findAccountByUserId(senderUser.getId());
         User receiverUser = userService.getUserByEmail(friendMail);
         Account receiverAccount = accountService.findAccountByUserId(receiverUser.getId());
-        accountService.debitAccount(senderUser, amount);
+
+        BigDecimal amountWithCharge = new BigDecimal(amount + chargeForAnyTransaction(amount)).setScale(2, RoundingMode.HALF_UP);
+        accountService.debitAccount(senderUser, amountWithCharge.doubleValue());
         accountService.creditAccount(receiverUser, amount);
+
         if (description == null)
             description = "";
-        Transaction transaction = new Transaction(LocalDateTime.now(), amount, description, receiverAccount, senderAccount, TransactionType.TO_FRIEND);
+        Transaction transaction = new Transaction(LocalDateTime.now(), amountWithCharge.doubleValue(), description, receiverAccount, senderAccount, TransactionType.TO_FRIEND);
         return transactionRepository.save(transaction);
     }
 
@@ -101,4 +107,10 @@ public class TransactionService {
             return false;
     }
 
+    //0,5% charge = amount * 0,005
+    public double chargeForAnyTransaction(double amount){
+        double charge = amount*5/1000;
+        BigDecimal bd = new BigDecimal(charge).setScale(2, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 }

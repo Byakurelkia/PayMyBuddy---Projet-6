@@ -1,6 +1,5 @@
 package com.paymybuddy.configuration;
 
-import com.paymybuddy.security.JwtAuthFilter;
 import com.paymybuddy.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,12 +27,10 @@ public class SecurityConfiguration {
     @Value("${jwt.key}")
     private String KEY;
 
-    private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsServices;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public SecurityConfiguration(JwtAuthFilter jwtAuthFilter, UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.jwtAuthFilter = jwtAuthFilter;
+    public SecurityConfiguration(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userDetailsServices = userService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -46,7 +43,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(x->
                         x
-                                .requestMatchers("/registration/**","/login","/user/**","/","/css/**","/addNewUser","/auth/generateToken").permitAll()
+                                .requestMatchers("/registration/**","/login","/","/css/**","/addNewUser").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement( x ->  x.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authenticationProvider(authenticationProvider())
@@ -61,8 +58,6 @@ public class SecurityConfiguration {
                     logoutConfigurer.logoutSuccessUrl("/login?logout").permitAll();
                 })
                 .rememberMe(x-> x.key(KEY));
-                //.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-                //.httpBasic(Customizer.withDefaults());
 
         return security.build();
     }

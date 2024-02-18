@@ -125,9 +125,6 @@ public class UserService implements UserDetailsService {
             return true;
     }
 
-    //essai
-    public Long accountNumber(Long idUser){
-        return accountService.findAccountByUserId(idUser).getIdAccount();
-    }
+
 
 }

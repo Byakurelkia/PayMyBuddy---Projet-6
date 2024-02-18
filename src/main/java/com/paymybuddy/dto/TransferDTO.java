@@ -1,4 +1,4 @@
-package com.paymybuddy.controller.dto;
+package com.paymybuddy.dto;
 
 public class TransferDTO {
     private String description;

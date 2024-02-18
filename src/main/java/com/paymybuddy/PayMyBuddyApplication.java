@@ -11,15 +11,19 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.time.LocalDateTime;
 
 @Slf4j
 @SpringBootApplication
-public class PayMyBuddyApplication implements CommandLineRunner {
-
-	@Autowired
+@EnableWebMvc
+public class PayMyBuddyApplication {
+	public static void main(String[] args) {
+		SpringApplication.run(PayMyBuddyApplication.class, args);
+	}
+	/*@Autowired
 	private UserRepository userRepository;
 
 	@Autowired
@@ -34,12 +38,11 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 	@Autowired
 	private BCryptPasswordEncoder encoder;
 
-	public static void main(String[] args) {
-		SpringApplication.run(PayMyBuddyApplication.class, args);
-	}
+
 
 	@Override
 	public void run(String... args) throws Exception {
+
 
 		User user = userRepository.save(new User("deneme","last","first", encoder.encode("1234"), true,true,true,true));
 		User user2 = userRepository.save(new User("deneme2","last2","first2",encoder.encode("1234"),true,true,true,true));
@@ -76,5 +79,6 @@ public class PayMyBuddyApplication implements CommandLineRunner {
 		friendRepository.findByFriendsFriendId(3L).forEach( a ->
 				System.out.println("Find by friend id: " + a.friendOf()));
 
-	}
+
+	}*/
 }

@@ -76,6 +76,11 @@
             <div class="alert alert-danger" align="center"> Transfer not made, please contact us.</div>
         </div>
 
+        <div th:if="${param.amountIncorrect}">
+            <br/>
+            <div class="alert alert-danger" align="center"> Transfer not made, amount can't be less than 1.</div>
+        </div>
+
         <div th:if="${param.transferUnsuccessfulAmount}">
             <br/>
             <div class="alert alert-danger" align="center"> Transfer not made, please check your sold!</div>

@@ -2,7 +2,11 @@ package com.paymybuddy.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@ToString
+@EqualsAndHashCode
 @Entity
 public class BankAccount {
 
@@ -33,4 +37,6 @@ public class BankAccount {
     public void setIBAN(String IBAN) {
         this.IBAN = IBAN;
     }
+
+
 }

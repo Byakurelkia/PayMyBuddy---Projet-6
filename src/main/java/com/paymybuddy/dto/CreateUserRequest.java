@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Builder
 @Getter
 @Setter
@@ -56,5 +58,18 @@ public class CreateUserRequest {
 
     public void setIBAN(String IBAN) {
         this.IBAN = IBAN;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CreateUserRequest)) return false;
+        CreateUserRequest that = (CreateUserRequest) o;
+        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(eMail, that.eMail) && Objects.equals(password, that.password) && Objects.equals(IBAN, that.IBAN);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName, eMail, password, IBAN);
     }
 }

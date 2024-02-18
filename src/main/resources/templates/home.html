@@ -72,14 +72,16 @@
 </div>
 
 <div class="container justify-content-md-center" style=" height: 50px; width: 100%; padding: 50px;" th:if="${param.feedAccountSuccess}"  align="center">
-    <div class="alert alert-info"> Amount added successfully to your account!</div>
+    <div class="alert alert-info"> Amount added successfully to your account! <br/> Please note that, transaction charge debited on every transaction.</div>
 </div>
 
 <div class="container justify-content-md-center" style=" height: 50px; width: 100%; padding: 50px;" th:if="${param.feedAccountUnsuccessful}"  align="center">
-    <div class="alert alert-danger"> Amount can't be negative or zero!</div>
+    <div class="alert alert-danger"> Amount can't be less than 1!</div>
 </div>
 <br>
+
 <div class="container" style=" height: 200px; width: 100%; padding: 50px;">
+
     <div class="card">
         <div class="text-bg-success p-3">
             Mon Compte
@@ -106,7 +108,7 @@
                                     <label class="form-label" for="amount">
                                         Amount to feed:
                                     </label>
-                                    <input type="double" class="form-control" min="0,01" id="amount" th:name="amount" required="autofocus"
+                                    <input type="double" class="form-control" min="1,00" id="amount" th:name="amount" required="autofocus"
                                            pattern="^\d*(\.\d{0,2})?$" placeholder="EUR">
                                 </div>
                                 <div class="modal-footer">

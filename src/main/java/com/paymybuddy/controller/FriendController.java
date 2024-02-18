@@ -6,9 +6,7 @@ import com.paymybuddy.repository.FriendsRepository;
 import com.paymybuddy.service.FriendService;
 import com.paymybuddy.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,20 +19,18 @@ public class FriendController {
 
     private final UserService userService;
     private final FriendService friendService;
-    private final FriendsRepository friendsRepository;
 
-    public FriendController(UserService userService, FriendService friendService, FriendsRepository friendsRepository) {
+    public FriendController(UserService userService, FriendService friendService) {
         this.userService = userService;
         this.friendService = friendService;
-        this.friendsRepository = friendsRepository;
     }
 
     //OK
     @GetMapping("/contact")
     public String contact(Model model) {
         log.info("contact method started");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User userConnected = (User) auth.getPrincipal();
+        String auth = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userConnected = userService.getUserByEmail(auth);
         List<User> friendsList = friendService.getFriendsListAsUserByUserId(userConnected.getId());
         int friendsListSize = friendsList.size();
         model.addAttribute("friends", friendsList);
@@ -46,8 +42,8 @@ public class FriendController {
     @GetMapping("/deleteFriend/{friendEmail}")
     public String deleteFriend(@PathVariable(name = "friendEmail") String email){
         log.info("delete friend method started");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
+        String auth = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.getUserByEmail(auth);
         try{
             friendService.deleteFriendByMail(user.getId(), email);
             log.info("delete friend method successfully made");
@@ -69,12 +65,16 @@ public class FriendController {
     public String addFriend(@ModelAttribute("emailFriend") String request){
         log.info("add friend method started");
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
+            String auth = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userService.getUserByEmail(auth);
             Long friendId = userService.getUserByEmail(request).getId();
             if (user.getId() == friendId){
                 log.error("add friend failed, friend user is same user");
                 return "redirect:/showFormAddFriend?sameUser";
+            }
+            if (friendService.isFriend(user.getId(), request)){
+                log.error("add friend failed, friend already exist !");
+                return "redirect:/showFormAddFriend?alreadyExist";
             }
             friendService.addFriend(userService.getUserByEmail(user.getUsername()).getId(), friendId);
             log.info("add friend method successfully made");

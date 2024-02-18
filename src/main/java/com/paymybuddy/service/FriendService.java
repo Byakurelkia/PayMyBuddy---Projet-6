@@ -1,9 +1,12 @@
 package com.paymybuddy.service;
 
+import com.paymybuddy.ExceptionHandler.UserNotFoundException;
 import com.paymybuddy.model.Friends;
 import com.paymybuddy.model.IdFriend;
 import com.paymybuddy.model.User;
 import com.paymybuddy.repository.FriendsRepository;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Transactional
+
 public class FriendService {
 
     private final FriendsRepository friendsRepository;
@@ -39,11 +43,11 @@ public class FriendService {
 
     }
 
-    //OK
+   /* //OK
     public List<String> getFriendsListByUserId(Long userId) {
         log.info("Get friend list by user id started");
         return friendsRepository.findByFriendsInitialUserId(userId).stream().map(f -> f.toString()).collect(Collectors.toList());
-    }
+    }*/
 
     public List<User> getFriendsListAsUserByUserId(Long userId) {
         log.info("Get friend list as user by user id started");
@@ -59,13 +63,13 @@ public class FriendService {
         return friendsRepository.findByFriendsInitialUserId(userId).stream().map(f -> f.getFriends().getFriend().getId()).collect(Collectors.toList());
     }
 
-    //OK
+    /*//OK
     public void deleteFriend(Long userId, Long friendId) {
         log.info("delete friend started");
         User user = userService.getUserById(userId);
         User friend = userService.getUserById(friendId);
         friendsRepository.delete(new Friends(new IdFriend(user, friend)));
-    }
+    }*/
 
     public void deleteFriendByMail(Long userId, String friendMail) {
         log.info("delete friend by friend mail started");
@@ -76,9 +80,17 @@ public class FriendService {
             friend = userService.getUserByEmail(friendMail);
             friendsRepository.delete(new Friends(new IdFriend(user, friend)));
             log.info("delete friend by friend mail success");
-        } catch (Exception e) {
+        } catch (UserNotFoundException e) {
             log.error("delete friend by friend mail failed");
+            throw new UserNotFoundException("Error during delete....");
         }
+    }
+
+    public boolean isFriend(Long userId, String friendMail){
+
+        User user = userService.getUserById(userId);
+        User friend = userService.getUserByEmail(friendMail);
+        return friendsRepository.existsById(new IdFriend(user, friend));
     }
 
 }

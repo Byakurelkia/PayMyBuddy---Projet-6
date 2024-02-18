@@ -3,6 +3,7 @@ package com.paymybuddy.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -61,6 +63,19 @@ public class User implements UserDetails {
         this.email = email;
         this.lastName = lastName;
         this.firstName = firstName;
+    }
+
+    public User(Long id,String email, String lastName, String firstName, String password, boolean accountNonExpired,
+                boolean isEnabled, boolean accountNonLocked, boolean credentialsNonExpired) {
+        this.id = id;
+        this.email = email;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.password = password;
+        this.accountNonLocked = accountNonLocked;
+        this.isEnabled = isEnabled;
+        this.accountNonExpired = accountNonExpired;
+        this.credentialsNonExpired = credentialsNonExpired;
     }
 
 
@@ -159,5 +174,18 @@ public class User implements UserDetails {
                 "lastName='" + lastName + '\'' +
                 ", firstName='" + firstName + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) && email.equals(user.email) && lastName.equals(user.lastName) && firstName.equals(user.firstName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email,password);
     }
 }
