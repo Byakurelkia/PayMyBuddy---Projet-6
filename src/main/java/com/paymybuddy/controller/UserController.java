@@ -68,7 +68,7 @@ import org.springframework.web.bind.annotation.*;
             log.info("registration method failed, user creation request object is not correct");
             return "redirect:/registration?errorFields";
         }catch(Exception e){
-            log.info("registration method failed, other issue..");
+            log.info("registration method failed, other issue.." + e.getMessage());
             return "redirect:/registration?someErrors";
         }
     }
@@ -79,14 +79,17 @@ import org.springframework.web.bind.annotation.*;
         log.info("update user profile started");
         String auth = SecurityContextHolder.getContext().getAuthentication().getName();
         User userConnected = userService.getUserByEmail(auth);
-        try {
-            userService.updateUser(userConnected.getEmail(), userToUpdate);
-            log.info("update user profile successfully made");
-            return "redirect:/login?profileUpdated";
-        }catch (Exception e){
-            log.error("update user profile failed");
-            return "redirect:/profile?profileNotUpdated";
-        }
+        if (userService.isMailValid(userToUpdate.getEmail())){
+            try {
+                userService.updateUser(userConnected.getEmail(), userToUpdate);
+                log.info("update user profile successfully made");
+                return "redirect:/login?profileUpdated";
+            }catch (Exception e){
+                log.error("update user profile failed");
+                return "redirect:/profile?profileNotUpdated";
+            }
+        }else return "redirect:/profile?emailInvalid";
+
 
     }
 

@@ -46,7 +46,7 @@ public class TransactionService {
         String description = "Transfer from app account to bank account";
         accountService.transferAmountToBankAccount(senderUser);
 
-        Transaction transactionToSave = new Transaction(LocalDateTime.now(), amount, description, senderUserAccount,
+        Transaction transactionToSave = new Transaction(LocalDateTime.now(), amount, 0d, description, senderUserAccount,
                 senderUserAccount, TransactionType.TO_BANK);
 
         return transactionRepository.save(transactionToSave);
@@ -56,11 +56,10 @@ public class TransactionService {
     public Transaction transactionFromBankAccountToAppAccount(User user, double amount) {
         log.info("transaction from bank account to app account started");
         Account userAccount = accountService.findAccountByUserId(user.getId());
-        double amountWithCharge = amount - chargeForAnyTransaction(amount);
-        accountService.addAmountFromBankToAccount(user, amountWithCharge);
+        accountService.addAmountFromBankToAccount(user, amount);
         String description = "Transfer from bank account to application account";
 
-        Transaction transaction = new Transaction(LocalDateTime.now(), amountWithCharge, description, userAccount, userAccount, TransactionType.FROM_BANK);
+        Transaction transaction = new Transaction(LocalDateTime.now(), amount, 0d, description, userAccount, userAccount, TransactionType.FROM_BANK);
 
         return transactionRepository.save(transaction);
     }
@@ -93,7 +92,7 @@ public class TransactionService {
 
         if (description == null)
             description = "";
-        Transaction transaction = new Transaction(LocalDateTime.now(), amountWithCharge.doubleValue(), description, receiverAccount, senderAccount, TransactionType.TO_FRIEND);
+        Transaction transaction = new Transaction(LocalDateTime.now(), amount, chargeForAnyTransaction(amount), description, receiverAccount, senderAccount, TransactionType.TO_FRIEND);
         return transactionRepository.save(transaction);
     }
 

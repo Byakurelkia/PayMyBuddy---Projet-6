@@ -19,6 +19,7 @@ public class Transaction {
     private LocalDateTime dateTransaction;
     private double amount;
     private String description;
+    private double fee;
 
     @ManyToOne
     @JoinColumn(name = "receiver_user_account")
@@ -35,9 +36,11 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(LocalDateTime dateTransaction, double amount, String description, Account receiverAccount, Account senderUserAccount, TransactionType transactionType) {
+    public Transaction(LocalDateTime dateTransaction, double amount, double fee, String description, Account receiverAccount,
+                       Account senderUserAccount, TransactionType transactionType) {
         this.dateTransaction = dateTransaction;
         this.amount = amount;
+        this.fee = fee;
         this.description = description;
         this.receiverAccount= receiverAccount;
         this.senderUserAccount = senderUserAccount;

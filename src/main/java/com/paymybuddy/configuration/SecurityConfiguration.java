@@ -43,7 +43,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(x->
                         x
-                                .requestMatchers("/registration/**","/login","/","/css/**","/addNewUser").permitAll()
+                                .requestMatchers("/registration/**","/login","/","/css/**").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement( x ->  x.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authenticationProvider(authenticationProvider())

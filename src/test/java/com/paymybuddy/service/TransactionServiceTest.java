@@ -44,7 +44,7 @@ public class TransactionServiceTest {
                 true,true,true,true);
         Account account = new Account(1L,100,user,null, null);
         String description = "Transfer from app account to bank account";
-        Transaction expectedTransaction = new Transaction(LocalDateTime.now(), 100,description , account,
+        Transaction expectedTransaction = new Transaction(LocalDateTime.now(), 100,0d , description , account,
                 account, TransactionType.TO_BANK);
 
         Mockito.when(accountService.findAccountByUserId(1L)).thenReturn(account);
@@ -81,17 +81,16 @@ public class TransactionServiceTest {
         Account account = new Account(1L,100,user,null, null);
         String description = "Transfer from bank account to application account";
         double amount = 10d;
-        double amountWithCharge = amount - amount*5/1000;
-        Transaction transaction = new Transaction(LocalDateTime.now(), amountWithCharge, description, account, account, TransactionType.FROM_BANK);
+        Transaction transaction = new Transaction(LocalDateTime.now(), amount, 0d, description, account, account, TransactionType.FROM_BANK);
 
         Mockito.when(accountService.findAccountByUserId(1L)).thenReturn(account);
-        Mockito.when(accountService.addAmountFromBankToAccount(user, amountWithCharge)).thenReturn("Amount addedd successfully!");
+        Mockito.when(accountService.addAmountFromBankToAccount(user, amount)).thenReturn("Amount addedd successfully!");
         Mockito.when(transactionRepository.save(transaction)).thenReturn(transaction);
 
         Transaction result = transactionService.transactionFromBankAccountToAppAccount(user,amount);
 
         Mockito.verify(accountService).findAccountByUserId(1L);
-        Mockito.verify(accountService).addAmountFromBankToAccount(user,amountWithCharge);
+        Mockito.verify(accountService).addAmountFromBankToAccount(user,amount);
         assertEquals(transaction,result);
 
 
@@ -106,15 +105,15 @@ public class TransactionServiceTest {
 
         Account account2 = new Account(2L,10,user2,null, null);
         Account account = new Account(1L,10,user,null, null);
-
+        BigDecimal amountWithCharge = new BigDecimal(10d + 10d*5/1000).setScale(2, RoundingMode.HALF_UP);
         List<TransactionDTO> dtoList = List.of(
                 new TransactionDTO("Me","description",10d),
                 new TransactionDTO("firstName2","description",10d)
         );
         List<Transaction> transactionList = List.of(
-                new Transaction(LocalDateTime.now(),10d,
+                new Transaction(LocalDateTime.now(),10d, 0d,
                 "description",account,account,TransactionType.TO_FRIEND),
-                new Transaction(LocalDateTime.now(),10d,
+                new Transaction(LocalDateTime.now(),10d,amountWithCharge.doubleValue(),
                         "description",account2,account,TransactionType.FROM_BANK)
         );
 
@@ -143,7 +142,7 @@ public class TransactionServiceTest {
         double charge = amount*5/1000;
         BigDecimal bd = new BigDecimal(charge).setScale(2, RoundingMode.HALF_UP);
         double amountWithCharge = amount + bd.doubleValue();
-        Transaction expectedTransaction = new Transaction(LocalDateTime.now(), amountWithCharge, description, receiverAccount, senderAccount, TransactionType.TO_FRIEND);
+        Transaction expectedTransaction = new Transaction(LocalDateTime.now(), amount, amountWithCharge, description, receiverAccount, senderAccount, TransactionType.TO_FRIEND);
 
         Mockito.when(accountService.findAccountByUserId(1L)).thenReturn(senderAccount);
         Mockito.when(userService.getUserByEmail(receiverMail)).thenReturn(user2);

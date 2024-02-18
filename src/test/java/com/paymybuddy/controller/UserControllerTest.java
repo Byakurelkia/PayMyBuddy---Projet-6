@@ -108,14 +108,15 @@ public class UserControllerTest {
     }
 
     @Test
-    @WithMockUser("email")
+    @WithMockUser("emailUp@test.com")
     void updateProfileShouldReturnSuccessParam() throws Exception {
-        User user = new User(1L,"email","lastName","firstName","password",
+        User user = new User(1L,"emailUp@test.com","lastName","firstName","password",
                 true,true,true,true);
-        User userToUpdate = new User(1L,"emailUp","lastNameUp","firstNameUp","passwordUp",
+        User userToUpdate = new User(1L,"emailTESTSECOND@test.com","lastNameUp","firstNameUp","passwordUp",
                 true,true,true,true);
 
-        Mockito.when(userService.getUserByEmail("email")).thenReturn(user);
+        Mockito.when(userService.isMailValid("emailTESTSECOND@test.com")).thenReturn(Boolean.TRUE);
+        Mockito.when(userService.getUserByEmail("emailUp@test.com")).thenReturn(user);
         Mockito.when(userService.updateUser(user.getEmail(), userToUpdate)).thenReturn(userToUpdate);
 
         mockMvc.perform(post("/updateUserProfile")
@@ -124,17 +125,19 @@ public class UserControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login?profileUpdated"));
 
-        Mockito.verify(userService).getUserByEmail("email");
+        Mockito.verify(userService).getUserByEmail("emailUp@test.com");
         Mockito.verify(userService).updateUser(user.getEmail(),userToUpdate);
 
     }
 
     @Test
-    @WithMockUser("email")
+    @WithMockUser("emailUp@test.com")
     void updateProfileShouldReturnException() throws Exception {
-        User user = new User(1L,"email","lastName","firstName","password",
+        User user = new User(1L,"emailUp@test.com","lastName","firstName","password",
                 true,true,true,true);
-        Mockito.when(userService.getUserByEmail("email")).thenReturn(user);
+
+        Mockito.when(userService.isMailValid("emailUp@test.com")).thenReturn(Boolean.TRUE);
+        Mockito.when(userService.getUserByEmail("emailUp@test.com")).thenReturn(user);
         Mockito.when(userService.updateUser(user.getEmail(), user)).thenThrow(RuntimeException.class);
 
         mockMvc.perform(post("/updateUserProfile")
@@ -143,17 +146,19 @@ public class UserControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/profile?profileNotUpdated"));
 
-        Mockito.verify(userService).getUserByEmail("email");
+        Mockito.verify(userService).getUserByEmail("emailUp@test.com");
         Mockito.verify(userService).updateUser(user.getEmail(),user);
 
     }
 
     @Test
-    @WithMockUser("email")
+    @WithMockUser("emailUp@test.com")
     void updateProfileShouldReturnMailALreadyExistException() throws Exception {
-        User user = new User(1L,"email","lastName","firstName","password",
+        User user = new User(1L,"emailUp@test.com","lastName","firstName","password",
                 true,true,true,true);
-        Mockito.when(userService.getUserByEmail("email")).thenReturn(user);
+
+        Mockito.when(userService.isMailValid("emailUp@test.com")).thenReturn(Boolean.TRUE);
+        Mockito.when(userService.getUserByEmail("emailUp@test.com")).thenReturn(user);
         Mockito.when(userService.updateUser(user.getEmail(), user)).thenThrow(MailIsAlreadyUsed.class);
 
         mockMvc.perform(post("/updateUserProfile")
@@ -162,7 +167,7 @@ public class UserControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/profile?profileNotUpdated"));
 
-        Mockito.verify(userService).getUserByEmail("email");
+        Mockito.verify(userService).getUserByEmail("emailUp@test.com");
         Mockito.verify(userService).updateUser(user.getEmail(),user);
 
     }

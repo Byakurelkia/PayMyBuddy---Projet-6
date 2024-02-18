@@ -81,6 +81,12 @@
                     <br/>
                 </div>
 
+                <div th:if="${param.emailInvalid}">
+                    <br/>
+                    <div class="alert alert-danger" align="center"> Email is invalid! Please provide a valid mail and superior to 10 characters! </div>
+                    <br/>
+                </div>
+
                 <!-- error if mail is already used -->
                 <div th:if="${param.profileNotUpdated}">
                     <br/>

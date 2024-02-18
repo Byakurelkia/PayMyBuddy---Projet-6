@@ -100,8 +100,8 @@ public class UserServiceTest {
 
     @Test
     public void createUserShouldReturnUser(){
-        CreateUserRequest request = new CreateUserRequest("firstName","lastName","email","password","IBAN");
-        User user = new User("email","lastName","firstName", passwordEncoder.encode("password"),
+        CreateUserRequest request = new CreateUserRequest("firstName","lastName","emailUp@test.com","password","IBAN");
+        User user = new User("emailUp@test.com","lastName","firstName", passwordEncoder.encode("password"),
                 true,true,true,true);
         Account account = new Account(0,user);
         BankAccount bankAccount = new BankAccount("IBAN",user);
@@ -119,10 +119,10 @@ public class UserServiceTest {
 
     @Test
     public void createUserShouldThrowMailExistException(){
-        CreateUserRequest request = new CreateUserRequest("firstName","lastName","email","password","IBAN");
-        User user = new User("email","lastName","firstName","password",true,true,true,true);
+        CreateUserRequest request = new CreateUserRequest("firstName","lastName","emailUp@test.com","password","IBAN");
+        User user = new User("emailUp@test.com","lastName","firstName","password",true,true,true,true);
 
-        Mockito.when(userRepository.findUserByEmail("email")).thenReturn(java.util.Optional.of(user));
+        Mockito.when(userRepository.findUserByEmail("emailUp@test.com")).thenReturn(java.util.Optional.of(user));
         MailIsAlreadyUsed result = assertThrows(MailIsAlreadyUsed.class, ()-> userService.createUser(request));
 
         assertEquals("This mail is already used by a user!",result.getMessage());
@@ -135,7 +135,7 @@ public class UserServiceTest {
         CreationUserRequestNonValid result = assertThrows(CreationUserRequestNonValid.class, ()->
                 userService.createUser(request));
 
-        assertEquals("Verify your entry, field/s can not be empty or composed only space!", result.getMessage());
+        assertEquals("Verify your entry, field/s can not be empty or composed only space and email need contains @ and be superior to 10 characters!", result.getMessage());
     }
 
     @Test

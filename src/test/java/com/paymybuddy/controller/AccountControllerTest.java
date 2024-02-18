@@ -12,6 +12,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -80,7 +82,8 @@ public class AccountControllerTest {
         Account sender = new Account(1L, 100, user, null, null);
         Account receiver = new Account(2L, 10, friend, null, null);
         TransferDTO transferDTO = new TransferDTO("description", 10, "friendMail");
-        Transaction transaction = new Transaction(LocalDateTime.now(), transferDTO.getAmount(), transferDTO.getDescription(), receiver, sender, TransactionType.TO_FRIEND);
+        BigDecimal charge = new BigDecimal(10d*5/1000).setScale(2, RoundingMode.HALF_UP);
+        Transaction transaction = new Transaction(LocalDateTime.now(), transferDTO.getAmount(),charge.doubleValue(), transferDTO.getDescription(), receiver, sender, TransactionType.TO_FRIEND);
 
         Mockito.when(userService.getUserByEmail("email")).thenReturn(user);
         Mockito.when(accountService.getBalanceByUserId(1L)).thenReturn(100d);
@@ -144,7 +147,7 @@ public class AccountControllerTest {
         User user = new User(1L, "email", "lastName", "firstName", "password",
                 true, true, true, true);
         Account sender = new Account(1L, 100, user, null, null);
-        Transaction transaction = new Transaction(LocalDateTime.now(), 10, "description", sender,
+        Transaction transaction = new Transaction(LocalDateTime.now(), 10,0, "description", sender,
                 sender, TransactionType.TO_BANK);
 
         Mockito.when(transactionService.transactionToBankAccount(user)).thenReturn(transaction);
@@ -182,7 +185,7 @@ public class AccountControllerTest {
         User user = new User(1L, "email", "lastName", "firstName", "password",
                 true, true, true, true);
         Account sender = new Account(1L, 100, user, null, null);
-        Transaction transaction = new Transaction(LocalDateTime.now(), 10.05d, "description", sender,
+        Transaction transaction = new Transaction(LocalDateTime.now(), 10d, 0d, "description", sender,
                 sender, TransactionType.FROM_BANK);
         double amount = 10d;
 

@@ -33,7 +33,7 @@
                 <!-- error if fields is empty or composed only space-->
                 <div th:if="${param.errorFields}">
                     <br/>
-                    <div class="alert alert-danger" align="center"> Field/s can not be empty OR composed only space !</div>
+                    <div class="alert alert-danger" align="center"> Verify your entry, field/s can not be empty, composed only space and email must be valid and be superior to 10 characters!</div>
                 </div>
 
                 <div th:if="${param.someErrors}">
@@ -65,7 +65,7 @@
 
                     <div class="mb-3">
                         <label class="control-label" for="eMail"> Email</label>
-                        <input id="eMail" class="form-control" th:field="*{eMail}" required autofocus="autofocus"/>
+                        <input id="eMail" type="email" class="form-control" th:field="*{eMail}" required autofocus="autofocus"/>
                     </div>
 
                     <div class="mb-3">

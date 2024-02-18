@@ -165,6 +165,7 @@
 						<exclude>**/dto/*</exclude>
 						<exclude>**/configuration/*</exclude>
 						<exclude>**/model/*</exclude>
+
 						<exclude>**/ExceptionHandler/*</exclude>
 						<exclude>**/repository/*</exclude>
 					</excludes>

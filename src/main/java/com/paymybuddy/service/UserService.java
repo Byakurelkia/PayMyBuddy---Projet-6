@@ -21,14 +21,15 @@ import java.util.Optional;
 @Transactional
 public class UserService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+
     private final BCryptPasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
     private final AccountService accountService;
     private final BankAccountService bankAccountService;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, AccountService accountService, BankAccountService bankAccountService) {
-        this.userRepository = userRepository;
+    public UserService(BCryptPasswordEncoder passwordEncoder, UserRepository userRepository, AccountService accountService, BankAccountService bankAccountService) {
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
         this.accountService = accountService;
         this.bankAccountService = bankAccountService;
     }
@@ -67,7 +68,7 @@ public class UserService implements UserDetailsService {
 
         if (!createUserRequestIsValid(request)){
             log.error("user can not create, field/s can not be empty or composed only space!");
-            throw new CreationUserRequestNonValid("Verify your entry, field/s can not be empty or composed only space!");
+            throw new CreationUserRequestNonValid("Verify your entry, field/s can not be empty or composed only space and email need contains @ and be superior to 10 characters!");
         }
 
         User userToCreate = new User(request.geteMail().trim(), request.getLastName().trim(), request.getFirstName().trim(),
@@ -119,10 +120,17 @@ public class UserService implements UserDetailsService {
         String IBAN = request.getIBAN().trim();
 
         if (firstName == null || firstName.length() == 0 || lastName == null || lastName.length() == 0 ||
-                eMail == null || eMail.length() == 0 || passWord == null || passWord.length() == 0 || IBAN == null || IBAN.length() == 0)
+                !isMailValid(eMail)|| passWord == null || passWord.length() == 0 || IBAN == null || IBAN.length() == 0)
             return false;
         else
             return true;
+    }
+
+    public boolean isMailValid(String email){
+        if(email.length()>10 & email.contains("@") & !(email == null))
+            return true;
+        else
+            return false;
     }
 
 
